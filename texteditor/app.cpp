@@ -37,18 +37,20 @@ int main()
 
             if (event.type == sf::Event::TextEntered) {
                 if (event.text.unicode < 128) {
-                    if (event.text.unicode != '\b') 
+                    if (event.text.unicode != '\b' && event.text.unicode != 13)
                     {
                         current_line += event.text.unicode;
-                        display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text);
                         window.clear();
+                        display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
+                        
                     }
 
                     if (event.text.unicode == '\b') // User enters backspace
                     {
                         utility.RemoveLastCharFromString(current_line);
-                        display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text);
                         window.clear();
+                        display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
+                       
                     }
 
                 }
@@ -58,6 +60,12 @@ int main()
                 if (event.key.code == sf::Keyboard::Enter) 
                 { // new line, saving current_line
                     storage.AddToDisplayPool(current_line + '\n'); // Save line with '\n' for new line
+                    current_line = ""; // Clear out the line
+
+                    window.clear(); // Clear the screen
+
+                    display.DisplayAllLinesFromVector(storage.GetDisplayPool(), window, sf::Color::White, font, text);
+                   
 
                 }
                 if (event.key.code == sf::Keyboard::Backspace) 
