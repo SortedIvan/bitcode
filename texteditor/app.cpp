@@ -15,6 +15,8 @@ int main()
 
     std::string current_line = "";
     sf::Font font;
+    sf::Text text;
+
     if (!font.loadFromFile("../8bitfont.ttf")) 
     {
         std::cout << "Error loading the font file" << std::endl;
@@ -23,7 +25,7 @@ int main()
 
     while (window.isOpen()) {
 
-        display.DisplayLineOnScreen("Hello world!", window, sf::Color::White, font);
+        //display.DisplayLineOnScreen("Hello world!", window, sf::Color::White, font, text);
 
         while (window.pollEvent(event)) {
 
@@ -36,8 +38,18 @@ int main()
                 if (event.text.unicode < 128) {
                     if (event.text.unicode != '\b') 
                     {
-                        
+                        current_line += event.text.unicode;
+                        display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text);
+                        window.clear();
                     }
+
+                    if (event.text.unicode == '\b') // User enters backspace
+                    {
+                        current_line.resize(current_line.size() - 1);
+                        display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text);
+                        window.clear();
+                    }
+
                 }
             }
 

@@ -3,9 +3,8 @@
 #include <string>
 #include <vector>
 
-void Display::DisplayAllLinesFromVector(std::vector<std::string>* vectorPointer, sf::RenderWindow& window, sf::Color color, sf::Font font) 
+void Display::DisplayAllLinesFromVector(std::vector<std::string>* vectorPointer, sf::RenderWindow& window, sf::Color color, sf::Font font, sf::Text text)
 {
-	sf::Text text;
 	text.setFont(font);
 	text.setFillColor(color);
 
@@ -16,15 +15,23 @@ void Display::DisplayAllLinesFromVector(std::vector<std::string>* vectorPointer,
 	}
 }
 
-void Display::DisplayLineOnScreen(std::string line, sf::RenderWindow& window, sf::Color color, sf::Font font) {
-
-	sf::Text text;
+void Display::DisplayLineOnScreen(std::string line, sf::RenderWindow& window, sf::Color color, sf::Font font, sf::Text text)
+{
 	text.setFont(font);
 	text.setFillColor(color);
 	text.setString(line);
 
 	window.draw(text);
 	window.display();
+}
 
+void Display::DisplayCharOnScreen(char character, sf::RenderWindow& window, sf::Color color, sf::Font font, sf::Text text)
+{
+	text.setFont(font);
+	text.setFillColor(color);
+	text.setString(character);
+
+	window.draw(text);
+	window.display();
 
 }
