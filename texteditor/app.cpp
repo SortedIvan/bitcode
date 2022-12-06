@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Storage.h"
 #include "Display.h"
-
+#include "Utility.h"
 
 int main()
 {
@@ -12,6 +12,7 @@ int main()
 
     Storage storage;
     Display display;
+    Utility utility;
 
     std::string current_line = "";
     sf::Font font;
@@ -45,7 +46,7 @@ int main()
 
                     if (event.text.unicode == '\b') // User enters backspace
                     {
-                        current_line.resize(current_line.size() - 1);
+                        utility.RemoveLastCharFromString(current_line);
                         display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text);
                         window.clear();
                     }
@@ -56,6 +57,7 @@ int main()
             if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code == sf::Keyboard::Enter) 
                 { // new line, saving current_line
+                    storage.AddToDisplayPool(current_line + '\n'); // Save line with '\n' for new line
 
                 }
                 if (event.key.code == sf::Keyboard::Backspace) 
