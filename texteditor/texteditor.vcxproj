@@ -152,6 +152,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
+    <ClCompile Include="Storage.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\8bitfont.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Storage.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
