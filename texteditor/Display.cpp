@@ -43,5 +43,14 @@ void Display::DisplayCharOnScreen(char character, sf::RenderWindow& window, sf::
 
 	window.draw(text);
 	window.display();
+}
 
+void Display::DisplayStringOnScreen(std::string text_str, sf::RenderWindow & window, sf::Color color, sf::Font font, sf::Text text)
+{
+	text.setFont(font);
+	text.setFillColor(color);
+	text.setString(text_str);
+
+	window.draw(text);
+	window.display();
 }

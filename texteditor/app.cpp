@@ -14,9 +14,12 @@ int main()
     Display display;
     Utility utility;
 
+    bool last_char;
+
     std::string current_line = "";
     sf::Font font;
     sf::Text text;
+
 
     if (!font.loadFromFile("../8bitfont.ttf")) 
     {
@@ -42,12 +45,17 @@ int main()
                         current_line += event.text.unicode;
                         window.clear();
                         display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
-                        
                     }
 
                     if (event.text.unicode == '\b') // User enters backspace
                     {
-                        utility.RemoveLastCharFromString(current_line);
+                        last_char = utility.RemoveLastCharFromString(current_line);
+                        if (last_char) 
+                        {
+                            current_line = storage.GetLineStorage()->back();
+                            storage.RemoveLastFromDisplayPool();
+                            storage.RemoveLastFromLineStorage();
+                        }
                         window.clear();
                         display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
                        
@@ -59,14 +67,14 @@ int main()
             if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code == sf::Keyboard::Enter) 
                 { // new line, saving current_line
+                   
                     storage.AddToDisplayPool(current_line + '\n'); // Save line with '\n' for new line
+                    storage.AddToLineStorage(current_line);
                     current_line = ""; // Clear out the line
 
                     window.clear(); // Clear the screen
-
                     display.DisplayAllLinesFromVector(storage.GetDisplayPool(), window, sf::Color::White, font, text);
                    
-
                 }
                 if (event.key.code == sf::Keyboard::Backspace) 
                 {
@@ -79,3 +87,5 @@ int main()
 
     return 0;
 }
+
+
