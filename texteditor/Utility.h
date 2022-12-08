@@ -4,5 +4,5 @@
 
 class Utility {
 	public:
-		bool RemoveLastCharFromString(std::string& line);
+		bool RemoveLastCharFromString(std::string& line, int index);
 };
