@@ -5,6 +5,7 @@
 #include "Storage.h"
 #include "Display.h"
 #include "Utility.h"
+#include "TextHandler.h"
 
 int main()
 {
@@ -14,6 +15,7 @@ int main()
     Storage storage;
     Display display;
     Utility utility;
+    TextHandler handler;
 
     bool last_char;
     bool user_typing = false;
@@ -31,6 +33,8 @@ int main()
     }
         
     int line_counter = 0;
+
+    std::vector<std::string>* all_documents = handler.GetAllAvailableDocuments();
 
     while (window.isOpen()) {
         

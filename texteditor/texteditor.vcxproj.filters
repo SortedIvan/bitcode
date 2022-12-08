@@ -30,6 +30,9 @@
     <ClCompile Include="TextDocument.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TextHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\8bitfont.ttf">
@@ -49,5 +52,14 @@
     <ClInclude Include="TextDocument.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TextHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="direct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Text\Test.txt" />
   </ItemGroup>
 </Project>
