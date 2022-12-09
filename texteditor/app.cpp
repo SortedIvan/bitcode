@@ -30,11 +30,27 @@ int main()
     {
         std::cout << "Error loading the font file" << std::endl;
         system("pause");
-    }
-        
+    }    
     int line_counter = 0;
 
+
+    // Testing file handler
     std::vector<std::string>* all_documents = handler.GetAllAvailableDocuments();
+    handler.CreateAllDocumentsOnLaunch();
+    std::vector<TextDocument>* text_documents = handler.GetTextDocuments();
+    std::cout << text_documents->size();
+    //
+    for (int i = 0; i < text_documents->size(); i++) {
+        std::cout << text_documents->at(i).GetDocumentName() << std::endl;
+        std::cout << text_documents->at(i).GetDocumentPath() << std::endl;
+    }
+
+    //for (int i = 0; i < all_documents->size(); i++) {
+    //    std::cout << all_documents->at(i);
+    //}
+    
+    // End of testing file handler
+
 
     while (window.isOpen()) {
         

@@ -10,7 +10,9 @@ class TextHandler {
 		std::vector<TextDocument>* GetTextDocuments();
 		TextDocument FindTextDocumentByName(std::string name);
 		bool DeleteTextDocumentByName(std::string name);
-		bool CreateTextDocument(std::string name, std::string path);
+		bool CreateTextDocumentObject(std::string name, std::string path);
+		bool GetAllDocumentNames();
 		bool CheckIfDocumentAlreadyExists(std::string name);
 		std::vector<std::string>* GetAllAvailableDocuments();
+		void CreateAllDocumentsOnLaunch();
 };
