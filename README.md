@@ -15,10 +15,8 @@ Feel free to check it out!
 <br/>
 <br/>
 <br/>
-- Editing text
-<br/>
-![editing!](https://user-images.githubusercontent.com/62967263/206822626-9433fd89-b3db-478f-9453-d959abe7ee89.gif)
-<br/>
-- Deleting text
-<br/>
-![deleting!(https://user-images.githubusercontent.com/62967263/206822646-d576d19d-6a90-4024-8fcc-9e5915f11b13.gif)]
+- Editing text <br/>
+![EDITING!](https://user-images.githubusercontent.com/62967263/206822626-9433fd89-b3db-478f-9453-d959abe7ee89.gif)
+- Deleting text <br/>
+![DELETING!](https://user-images.githubusercontent.com/62967263/206822646-d576d19d-6a90-4024-8fcc-9e5915f11b13.gif)
+
