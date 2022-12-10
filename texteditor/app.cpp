@@ -52,17 +52,41 @@ int main()
     // End of testing file handler
 
 
-    while (window.isOpen()) {
-        
-        while (window.pollEvent(event)) {
 
+    // Setting the text to be inwards
+    text.setOrigin(sf::Vector2f(-70.f, 0.f)); 
+
+    // Creating inwarded text overlay
+
+    // GRAPHICAL INTERFACE -> TO BE EXTRACTED
+    sf::Color backgroundColor(0, 32, 63);
+    sf::Color textSeperatorColor(173, 239, 209); 
+
+    sf::RectangleShape rect(sf::Vector2f(60.f, 1000.f));
+    rect.setPosition(sf::Vector2f(0.f, 0.f));
+    rect.setFillColor(textSeperatorColor);
+    sf::RenderTexture bgTex;
+    bgTex.create(1500, 1000);
+    bgTex.draw(rect);
+    bgTex.display();
+
+    sf::Sprite background_overlay(bgTex.getTexture());
+    
+    while (window.isOpen()) {
+
+        window.clear(backgroundColor);
+        window.draw(background_overlay);
+        display.DrawLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
+        window.display();
+
+        while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) 
             {
                 window.close();
             }
 
             if (event.type == sf::Event::TextEntered) {
-
+                user_typing = true;
                 if (event.text.unicode < 128) {
                     if (event.text.unicode != '\b' && event.text.unicode != 13)
                     {
@@ -70,8 +94,8 @@ int main()
                         // Keeping track of the amount of characters on the current line
                         current_line_character += 1; 
 
-                        window.clear();
-                        display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
+                        //window.clear();
+                        //display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
                     }
 
                     if (event.text.unicode == '\b') // User enters backspace
@@ -90,8 +114,8 @@ int main()
                                 storage.RemoveLastFromLineStorage();
                             }
                         }
-                        window.clear();
-                        display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
+                        //window.clear();
+                        //display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
                        
                     }
 
@@ -107,8 +131,6 @@ int main()
                     storage.AddToLineStorage(current_line);
                     current_line = ""; // Clear out the line
                     current_line_character = 0;
-                    window.clear(); // Clear the screen
-                    display.DisplayAllLinesFromVector(storage.GetDisplayPool(), window, sf::Color::White, font, text);
                    
                 }
                 if (event.key.code == sf::Keyboard::Backspace) 
@@ -116,7 +138,9 @@ int main()
 
                 }
             }
+
         }
+
 
     }
 

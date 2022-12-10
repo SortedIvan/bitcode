@@ -37,8 +37,6 @@ bool TextHandler::CreateTextDocumentObject(std::string name, std::string path)
 	//std::string full_path = R"(.\\Text\\)";
 	//full_path += name + ".txt";
 
-	//std::ofstream outfile(full_path);
-	//outfile.close();
 	return true;
 }
 

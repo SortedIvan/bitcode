@@ -19,7 +19,7 @@ void Display::DisplayAllLinesFromVector(std::vector<std::string>* vectorPointer,
 	window.display();
 }
 
-void Display::DisplayLineOnScreen(std::string line, sf::RenderWindow& window, sf::Color color, sf::Font font, sf::Text text, std::vector<std::string>* vectorPointer)
+void Display::DrawLineOnScreen(std::string line, sf::RenderWindow& window, sf::Color color, sf::Font font, sf::Text text, std::vector<std::string>* vectorPointer)
 {
 
 	std::string all_text = "";
@@ -32,7 +32,7 @@ void Display::DisplayLineOnScreen(std::string line, sf::RenderWindow& window, sf
 	text.setString(all_text + line);
 
 	window.draw(text);
-	window.display();
+	//window.display(); // TESTING WITHOUT DISPLAY
 }
 
 void Display::DisplayCharOnScreen(char character, sf::RenderWindow& window, sf::Color color, sf::Font font, sf::Text text)
