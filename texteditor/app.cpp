@@ -7,6 +7,10 @@
 #include "Utility.h"
 #include "TextHandler.h"
 
+
+// TO DO -> Abstract to utility
+void LineCountDraw(int count, sf::Text& line_count_text, sf::RenderWindow& window);
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(1500, 1000), "Bitcode");
@@ -22,41 +26,26 @@ int main()
 
     std::string current_line = "";
     int current_line_character = 0;
+    int line_counter = 1; // The amount of lines the text file starts with, has to be abstracted
     sf::Font font;
     sf::Text text;
-    
+    sf::Text lineCountText;
+
 
     if (!font.loadFromFile("../8bitfont.ttf")) 
     {
         std::cout << "Error loading the font file" << std::endl;
         system("pause");
     }    
-    int line_counter = 0;
+   
+    // Setting the text to be inwards -> TODO: Make it scalable with screen
+    text.setOrigin(sf::Vector2f(-70.f, 0.f));
 
-
-    // Testing file handler
-    std::vector<std::string>* all_documents = handler.GetAllAvailableDocuments();
-    handler.CreateAllDocumentsOnLaunch();
-    std::vector<TextDocument>* text_documents = handler.GetTextDocuments();
-    std::cout << text_documents->size();
-    //
-    for (int i = 0; i < text_documents->size(); i++) {
-        std::cout << text_documents->at(i).GetDocumentName() << std::endl;
-        std::cout << text_documents->at(i).GetDocumentPath() << std::endl;
-    }
-
-    //for (int i = 0; i < all_documents->size(); i++) {
-    //    std::cout << all_documents->at(i);
-    //}
-    
-    // End of testing file handler
-
-
-
-    // Setting the text to be inwards
-    text.setOrigin(sf::Vector2f(-70.f, 0.f)); 
-
-    // Creating inwarded text overlay
+    // Line counter text, lines shown on left of screen
+    lineCountText.setFont(font);
+    lineCountText.setFillColor(sf::Color::Black);
+    lineCountText.setOrigin(sf::Vector2f(-30.f, 0.f));
+     
 
     // GRAPHICAL INTERFACE -> TO BE EXTRACTED
     sf::Color backgroundColor(0, 32, 63);
@@ -74,11 +63,17 @@ int main()
     
     while (window.isOpen()) {
 
+        // DRAWING
         window.clear(backgroundColor);
         window.draw(background_overlay);
+        LineCountDraw(line_counter, lineCountText, window);
         display.DrawLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
+
+        // DISPLAYING
         window.display();
 
+
+        // TO DO - ABSTRACT USER INPUT LOGIC
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) 
             {
@@ -112,11 +107,14 @@ int main()
                                 current_line_character = current_line.size();
                                 storage.RemoveLastFromDisplayPool();
                                 storage.RemoveLastFromLineStorage();
+
+
+                                //TODO: Remove and abstract to actual counter
+                                if (line_counter - 1 != -1) {
+                                    line_counter -= 1;
+                                }
                             }
                         }
-                        //window.clear();
-                        //display.DisplayLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
-                       
                     }
 
                 }
@@ -131,6 +129,7 @@ int main()
                     storage.AddToLineStorage(current_line);
                     current_line = ""; // Clear out the line
                     current_line_character = 0;
+                    line_counter += 1;
                    
                 }
                 if (event.key.code == sf::Keyboard::Backspace) 
@@ -147,7 +146,13 @@ int main()
     return 0;
 }
 
-void LineAnimation() 
-{
+void LineCountDraw(int count, sf::Text& line_count_text, sf::RenderWindow& window) {
+    std::string lines = "";
+    for (int i = 0; i < count; i++) {
+        lines += std::to_string(i);
+        lines += '\n';
+    }
 
+    line_count_text.setString(lines);
+    window.draw(line_count_text);
 }
