@@ -173,6 +173,7 @@
     <ClInclude Include="TextDocument.h" />
     <ClInclude Include="TextHandler.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="UserInput.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
