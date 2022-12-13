@@ -83,7 +83,7 @@ void TextHandler::CreateAllDocumentsOnLaunch() {
 		for (int i = 0; i < document_paths->size(); i++) {
 			std::string document_name = utility.MatchStringToRegex(regexpr, document_paths->at(i));
 			if (document_name != "") {
-				std::cout << document_name << " IS THE NAME AND " << document_paths->at(i) << " IS THE PATH" << std::endl;
+				//std::cout << document_name << " IS THE NAME AND " << document_paths->at(i) << " IS THE PATH" << std::endl;
 				CreateTextDocumentObject(document_name, document_paths->at(i));
 			}
 		}

@@ -27,7 +27,9 @@ int main()
     TextHandler handler;
     Menu menu;
 
-    if (menu.MenuControl() == "Test") {
+    handler.CreateAllDocumentsOnLaunch();
+
+    if (menu.MenuControl(handler) == "Test") {
         std::cout << "works";
     }
 
