@@ -6,6 +6,8 @@
 #include "Display.h"
 #include "Utility.h"
 #include "TextHandler.h"
+#include "Menu.h"
+
 
 
 // TO DO -> Abstract to utility
@@ -19,13 +21,20 @@ void OnRegularTextEntered(sf::Event event, std::string& current_line, int& curre
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(1500, 1000), "Bitcode");
-    sf::Event event;
-
     Storage storage;
     Display display;
     Utility utility;
     TextHandler handler;
+    Menu menu;
+
+    if (menu.MenuControl() == "Test") {
+        std::cout << "works";
+    }
+
+    sf::RenderWindow window(sf::VideoMode(1500, 1000), "Bitcode");
+
+    sf::Event event;
+
 
     bool last_char;
     bool user_typing = false;
@@ -38,13 +47,8 @@ int main()
     sf::Text text;
     sf::Text lineCountText;
 
-
-    if (!font.loadFromFile("../8bitfont.ttf")) 
-    {
-        std::cout << "Error loading the font file" << std::endl;
-        system("pause");
-    }    
-   
+    // Loading fonts
+    utility.CheckFontLoaded(font, "../8bitfont.ttf");
     // Setting the text to be inwards -> TODO: Make it scalable with screen
     text.setOrigin(sf::Vector2f(-80.f, 0.f));
 

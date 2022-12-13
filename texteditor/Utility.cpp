@@ -1,5 +1,7 @@
 #include "Utility.h"
 #include <string>
+#include <iostream>
+#include  <SFML/Graphics.hpp>
 using namespace std::literals::string_literals;
 
 bool Utility::RemoveLastCharFromString(std::string& line, int index) {
@@ -38,4 +40,12 @@ std::string Utility::MathPathRegex(std::string path) {
 		}
 	}
 	return matched;
+}
+
+void Utility::CheckFontLoaded(sf::Font& font, std::string path) {
+	if (!font.loadFromFile(path))
+	{
+		std::cout << "Error loading the font file" << std::endl;
+		system("pause");
+	}
 }
