@@ -9,6 +9,8 @@
 #include "TextHandler.h"
 #include "TextDocument.h"
 
+
+
 bool Menu::CreateNewTextDocument(std::string name, TextHandler& handler)
 {
 	if (handler.CheckIfDocumentAlreadyExists(name)) {
@@ -30,20 +32,34 @@ bool Menu::SelectDocument(std::string name, TextHandler& handler)
 	return false;
 }
 
-void Menu::ListAllOptions(sf::RenderWindow& window, sf::Text text, TextHandler& handler) {
+std::vector<sf::Text> Menu::GetAllTextOptions(TextHandler& handler, sf::Font& font) {
 	std::vector<TextDocument>* all_available_documents = handler.GetTextDocuments();
-	std::string options = "";
+	std::vector<sf::Text> menu_text_options;
 
 	for (int i = 0; i < all_available_documents->size(); i++) {
-		options += std::to_string(i) + ") " + all_available_documents->at(i).GetDocumentName();
-		options += '\n';
-        options += '\n';
-
-		std::cout << options;
+		sf::Text text;
+		text.setFont(font);
+		text.setString(std::to_string(i) + ") " + all_available_documents->at(i).GetDocumentName());
+		menu_text_options.push_back(text);
 	}
+	return menu_text_options;
 	
-	text.setString(options);
-	window.draw(text);
+}
+
+// ACCESS VIOLATION ERROR
+void Menu::DrawAllOptions(sf::RenderWindow& window, std::vector<sf::Text>& menu_text_options) {
+	std::cout << menu_text_options.size() << " is the current size " << std::endl;;
+
+	try {
+		for (int i = 0; i < menu_text_options.size(); i++) {
+			// EXCEPTION THROWN HERE
+			window.draw(menu_text_options.at(i));
+		}
+	}
+	catch (const std::exception& ex) {
+
+		std::cout << "Exception: " << ex.what() << '\n';
+	}
 }
 
 
@@ -54,10 +70,11 @@ std::string Menu::MenuControl(TextHandler& handler) {
 	sf::Event event;
 	sf::Font font;
 	sf::Text menu_text;
+	utility.CheckFontLoaded(font, "../8bitfont.ttf");
 
+	std::vector<sf::Text> menu_text_options = GetAllTextOptions(handler, font);
 	int menu_counter = 0; // Start at the first document, count goes up and down with arrows
 
-	utility.CheckFontLoaded(font, "../8bitfont.ttf");
 	menu_text.setOrigin(sf::Vector2f(-20.f, 0.f));
 	menu_text.setFont(font);
 
@@ -65,7 +82,9 @@ std::string Menu::MenuControl(TextHandler& handler) {
         // DRAWING
         menu_window.clear(backgroundColor); // Setting menu background color
         //window.draw(background_overlay);
-		ListAllOptions(menu_window, menu_text, handler);
+		
+		DrawAllOptions(menu_window, menu_text_options); //ACCESS VIOLATION ERROR
+
         // DISPLAYING
         menu_window.display();
 
@@ -91,7 +110,7 @@ std::string Menu::MenuControl(TextHandler& handler) {
 
         }
     }
-    return "";
+    return "Not correctly working";
 
 }
 

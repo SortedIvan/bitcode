@@ -12,12 +12,12 @@
 
 // TO DO -> Abstract to utility
 void LineCountDraw(int count, sf::Text& line_count_text, sf::RenderWindow& window);
-void OnEnterReleased(sf::Event event, Storage& storage, std::string& current_line, int& line_counter, int& current_line_character_count);
-void OnUserEntersBackspace(sf::Event event, Storage& storage, Utility& utility, bool& last_char, std::string& current_line, int& current_line_character_count, int& line_counter);
-void OnLastCharacterInCurrentLine(Storage& storage, std::string& current_line, int& current_line_character_count, int& line_counter, bool& last_char);
+void OnEnterReleased(sf::Event event, Storage& storage, std::string& current_line, int& line_counter, int& current_line_character_count, int& selected_line_char);
+void OnUserEntersBackspace(sf::Event event, Storage& storage, Utility& utility, bool& last_char, std::string& current_line, int& current_line_character_count, int& line_counter, int& selected_line_char);
+void OnLastCharacterInCurrentLine(Storage& storage, std::string& current_line, int& current_line_character_count, int& line_counter, bool& last_char, int& selected_line_char);
 void OnLeftArrowPressed(sf::Event event);
-void OnRightArrowPressed(sf::Event event);
-void OnRegularTextEntered(sf::Event event, std::string& current_line, int& current_line_character_count);
+void OnRightArrowPressed(sf::Event event); 
+void OnRegularTextEntered(sf::Event event, std::string& current_line, int& current_line_character_count, int& selected_line_char);
 
 int main()
 {
@@ -99,9 +99,9 @@ int main()
                     user_typing = true;
                     if (event.text.unicode < 128) {
                         //Normal characters entered
-                        OnRegularTextEntered(event, current_line, current_line_character_count);
+                        OnRegularTextEntered(event, current_line, current_line_character_count, selected_line_char);
                         //BACKSPACE
-                        OnUserEntersBackspace(event, storage, utility, last_char, current_line, current_line_character_count, line_counter);
+                        OnUserEntersBackspace(event, storage, utility, last_char, current_line, current_line_character_count, line_counter, selected_line_char);
                         // Left and right arrow keys
                         OnLeftArrowPressed(event);
                         OnRightArrowPressed(event);
@@ -110,7 +110,7 @@ int main()
                     break;
 
                 case sf::Event::KeyReleased:
-                    OnEnterReleased(event, storage, current_line, line_counter, current_line_character_count);
+                    OnEnterReleased(event, storage, current_line, line_counter, current_line_character_count, selected_line_char);
                     break;
 
             }
@@ -131,7 +131,7 @@ void LineCountDraw(int count, sf::Text& line_count_text, sf::RenderWindow& windo
     window.draw(line_count_text);
 }
 
-void OnEnterReleased(sf::Event event, Storage& storage, std::string& current_line, int& line_counter, int& current_line_character_count) {
+void OnEnterReleased(sf::Event event, Storage& storage, std::string& current_line, int& line_counter, int& current_line_character_count, int& selected_line_char) {
     if (event.key.code == sf::Keyboard::Enter)
     { // new line, saving current_line
 
@@ -139,29 +139,51 @@ void OnEnterReleased(sf::Event event, Storage& storage, std::string& current_lin
         storage.AddToLineStorage(current_line);
         current_line = ""; // Clear out the line
         current_line_character_count = 0;
+
+
+        selected_line_char = 0;
         line_counter += 1;
 
     }
 }
 
-void OnUserEntersBackspace(sf::Event event,Storage& storage, Utility& utility,bool& last_char, std::string& current_line, int& current_line_character_count,int& line_counter) {
+void OnUserEntersBackspace(sf::Event event,Storage& storage, Utility& utility,bool& last_char, std::string& current_line, int& current_line_character_count,int& line_counter, int& selected_line_char) {
     if (event.text.unicode == '\b') // User enters backspace
     {
-        last_char = utility.RemoveLastCharFromString(current_line, current_line_character_count);
+        // If the character pointer is where the user is, we delete the last character from the current line
+        if (current_line_character_count == selected_line_char) {
+            last_char = utility.RemoveLastCharFromString(current_line, current_line_character_count);
+            if (!current_line_character_count <= 0) {
+                current_line_character_count -= 1;
+            }
+            if (!selected_line_char <= 0) {
+                selected_line_char -= 1;
+            }
+            // If its the last character in the line, we get the next one if there is one
+            OnLastCharacterInCurrentLine(storage, current_line, current_line_character_count, line_counter, last_char, selected_line_char);
+            return;
+        }
+        // Otherwise, we remove a character from where the user is currently positioned within the string
+        last_char = !utility.RemoveCharFromStr(current_line, selected_line_char);
+
         if (!current_line_character_count <= 0) {
             current_line_character_count -= 1;
         }
-
-        OnLastCharacterInCurrentLine(storage, current_line, current_line_character_count, line_counter, last_char);
+        if (!selected_line_char <= 0) {
+            selected_line_char -= 1;
+        }
+        OnLastCharacterInCurrentLine(storage, current_line, current_line_character_count, line_counter, last_char, selected_line_char);
     }
 }
 
-void OnLastCharacterInCurrentLine(Storage& storage, std::string& current_line, int& current_line_character_count, int& line_counter, bool& last_char) {
+// When the user deletes a character and it is the last one in the string, we get a new line and set the variables accordingly
+void OnLastCharacterInCurrentLine(Storage& storage, std::string& current_line, int& current_line_character_count, int& line_counter, bool& last_char, int& selected_line_char) {
     if (last_char)
     {
         if (storage.GetLineStorage()->size() != 0) {
             current_line = storage.GetLineStorage()->back();
             current_line_character_count = current_line.size();
+            selected_line_char = current_line.size();
             storage.RemoveLastFromDisplayPool();
             storage.RemoveLastFromLineStorage();
 
@@ -173,6 +195,7 @@ void OnLastCharacterInCurrentLine(Storage& storage, std::string& current_line, i
     }
 }
 
+// When user presses LEFT & RIGHT arrow keys
 void OnLeftArrowPressed(sf::Event event) {
     if (event.text.unicode == 37) {
 
@@ -184,10 +207,21 @@ void OnRightArrowPressed(sf::Event event) {
     }
 }
 
-void OnRegularTextEntered(sf::Event event, std::string& current_line, int& current_line_character_count) {
+// When regular/ a-z text is entered | TODO: Abstracting ctrl+c, shift, etc.
+void OnRegularTextEntered(sf::Event event, std::string& current_line, int& current_line_character_count, int& selected_line_char) {
+    // If the unicode is not backspace, enter, left or right arrow
     if (event.text.unicode != '\b' && event.text.unicode != 13 && event.text.unicode != '37' && event.text.unicode != '39')
     {
+        // if the current selected character is not the size of the line (so the current character is not the last character of the string)
+        if (selected_line_char != current_line_character_count) {
+            // Add character at the selected index
+            current_line[selected_line_char] += event.text.unicode;
+            current_line_character_count += 1; // Keeping track of how many characters are in the string
+            return;
+        }
+        // Otherwise, add character at the end of the line
         current_line += event.text.unicode;
         current_line_character_count += 1; // Keeping track of how many characters are in the string
+        selected_line_char += 1;
     }
 }

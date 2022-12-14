@@ -49,3 +49,14 @@ void Utility::CheckFontLoaded(sf::Font& font, std::string path) {
 		system("pause");
 	}
 }
+
+bool Utility::RemoveCharFromStr(std::string& s, int pos) {
+		int length = s.size();
+
+	if (pos >= length) return false;
+
+	for (int i = pos; i < length; i++)
+		s[i] = s[i + 1];
+
+	return true;
+}

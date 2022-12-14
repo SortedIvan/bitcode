@@ -9,5 +9,6 @@ class Menu {
 		bool CreateNewTextDocument(std::string name, TextHandler& handler);
 		bool SelectDocument(std::string name, TextHandler& handler);
 		bool DeleteDocument(std::string name);
-		void ListAllOptions(sf::RenderWindow& window, sf::Text text, TextHandler& handler);
+		void DrawAllOptions(sf::RenderWindow& window, std::vector<sf::Text>& menu_text_options);
+		std::vector<sf::Text> GetAllTextOptions(TextHandler& handler, sf::Font& font);
 };

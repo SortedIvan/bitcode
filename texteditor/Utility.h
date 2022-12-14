@@ -10,4 +10,5 @@ class Utility {
 		std::string MatchStringToRegex(std::regex regexpr, std::string string_to_match);
 		std::string MathPathRegex(std::string path);
 		void CheckFontLoaded(sf::Font& font, std::string path);
+		bool RemoveCharFromStr(std::string& s, int pos);
 };
