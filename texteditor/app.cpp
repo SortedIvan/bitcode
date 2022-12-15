@@ -1,7 +1,6 @@
 #include  <SFML/Graphics.hpp>
 #include <string>
 #include <iostream>
-
 #include "Storage.h"
 #include "Display.h"
 #include "Utility.h"

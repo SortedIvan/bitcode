@@ -5,6 +5,7 @@
 #include "Display.h"
 #include "Utility.h"
 #include "TextDocument.h"
+#include "FileWriter.h"
 
 // TO DO -> Abstract to utility
 void LineCountDraw(int count, sf::Text& line_count_text, sf::RenderWindow& window);
@@ -19,6 +20,7 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
 {
     Display display;
     Utility utility;
+    FileWriter writer;
 
 	sf::RenderWindow window(sf::VideoMode(1500, 1000), document.GetDocumentName());
 	sf::Event event;
@@ -85,7 +87,12 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
 
             case sf::Event::TextEntered:
                 user_typing = true;
-                if (event.text.unicode < 128) {
+                if (event.text.unicode < 128) { 
+                    // saving with ctrl+s
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+                        writer.WriteOutStorageContentOnFile(storage, document.GetDocumentPath(), current_line);
+                    }
+
                     //Normal characters entered
                     OnRegularTextEntered(event, current_line, current_line_character_count, selected_line_char);
                     //BACKSPACE
@@ -93,6 +100,7 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
                     // Left and right arrow keys
                     OnLeftArrowPressed(event);
                     OnRightArrowPressed(event);
+
 
                 }
                 break;
@@ -215,3 +223,4 @@ void OnRegularTextEntered(sf::Event event, std::string& current_line, int& curre
         selected_line_char += 1;
     }
 }
+
