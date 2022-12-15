@@ -1,4 +1,5 @@
 #include  <SFML/Graphics.hpp>
+#include <thread>
 #include <string>
 #include <iostream>
 #include <vector>
@@ -9,7 +10,6 @@
 #include "TextHandler.h"
 #include "TextDocument.h"
 
-#include <thread>
 using namespace std::chrono_literals;
 
 
@@ -70,7 +70,7 @@ void Menu::DrawAllOptions(sf::RenderWindow& window, std::vector<sf::Text>& menu_
 }
 
 
-std::string Menu::MenuControl(TextHandler& handler) {
+int Menu::MenuControl(TextHandler& handler) {
 	//sf::Text::findCharacterPos() IMPORTANT!
 	Utility utility;
 	sf::RenderWindow menu_window(sf::VideoMode(800, 600), "Menu");
@@ -82,6 +82,7 @@ std::string Menu::MenuControl(TextHandler& handler) {
 	utility.CheckFontLoaded(font, "../8bitfont.ttf");
 
 	std::vector<sf::Text> menu_text_options = GetAllTextOptions(handler, font);
+	std::vector<TextDocument>* all_available_documents = handler.GetTextDocuments();
 	int menu_counter = 0; // Start at the first document, count goes up and down with arrows
 	int menu_options_amount = menu_text_options.size();
 
@@ -107,7 +108,7 @@ std::string Menu::MenuControl(TextHandler& handler) {
             {
 				case sf::Event::Closed:
 					menu_window.close();
-					return "Test";
+					return 1;
 					break;
 
 				case sf::Event::TextEntered:
@@ -118,12 +119,17 @@ std::string Menu::MenuControl(TextHandler& handler) {
 
 				case sf::Event::KeyReleased:
 					OnArrowsUpAndDownPress(event, menu_counter, menu_options_amount);
+					if (event.key.code == sf::Keyboard::Enter)
+					{
+						menu_window.close();
+						return menu_counter;
+					}
 					break;
 			}
 
         }
     }
-    return "Not correctly working";
+    return -1;
 
 }
 

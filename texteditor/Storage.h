@@ -11,12 +11,12 @@ class Storage {
 	public:
 		std::vector<std::string>* GetDisplayPool();
 		std::vector<std::string>* GetLineStorage();
-		
 		void AddToDisplayPool(std::string line);
 		void AddToLineStorage(std::string line);
-
 		void RemoveLastFromDisplayPool();
 		void RemoveLastFromLineStorage();
+		std::string GetLastLineFromDisplayStorage();
+		std::string GetLastLineFromLineStorage();
 };
 
 
