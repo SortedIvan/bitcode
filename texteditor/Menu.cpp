@@ -73,12 +73,16 @@ void Menu::DrawAllOptions(sf::RenderWindow& window, std::vector<sf::Text>& menu_
 int Menu::MenuControl(TextHandler& handler) {
 	//sf::Text::findCharacterPos() IMPORTANT!
 	Utility utility;
-	sf::RenderWindow menu_window(sf::VideoMode(800, 600), "Menu");
+	sf::RenderWindow menu_window;
+	menu_window.create(sf::VideoMode(800, 600), "Menu");
+
 	sf::Color backgroundColor(0, 32, 63);
 	sf::Color highlight_text_color(173, 239, 209);
 	sf::Event event;
 	sf::Font font;
 	sf::Text menu_text;
+	sf::Text new_doc_text;
+
 	utility.CheckFontLoaded(font, "../8bitfont.ttf");
 
 	std::vector<sf::Text> menu_text_options = GetAllTextOptions(handler, font);
@@ -90,6 +94,7 @@ int Menu::MenuControl(TextHandler& handler) {
 	menu_text.setOrigin(sf::Vector2f(-20.f, 0.f));
 	menu_text.setFont(font);
 
+
     while (menu_window.isOpen()) {
         // DRAWING
         menu_window.clear(backgroundColor); // Setting menu background color
@@ -97,6 +102,7 @@ int Menu::MenuControl(TextHandler& handler) {
 		HighlightSelectedOption(menu_text_options, sf::Color::Black, menu_counter);
 
 		DrawAllOptions(menu_window, menu_text_options);
+
 
         // DISPLAYING
         menu_window.display();
@@ -115,15 +121,17 @@ int Menu::MenuControl(TextHandler& handler) {
 					if (event.text.unicode < 128) {
 
 					}
+
 					break;
 
 				case sf::Event::KeyReleased:
-					OnArrowsUpAndDownPress(event, menu_counter, menu_options_amount);
 					if (event.key.code == sf::Keyboard::Enter)
 					{
 						menu_window.close();
 						return menu_counter;
 					}
+
+					OnArrowsUpAndDownPress(event, menu_counter, menu_options_amount);
 					break;
 			}
 
@@ -164,3 +172,4 @@ void HighlightSelectedOption(std::vector<sf::Text>& text_options, sf::Color high
 		text_options.at(i).setFillColor(highlight_color);
 	}
 }
+

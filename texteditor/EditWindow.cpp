@@ -10,11 +10,12 @@
 // TO DO -> Abstract to utility
 void LineCountDraw(int count, sf::Text& line_count_text, sf::RenderWindow& window);
 void OnEnterReleased(sf::Event event, Storage& storage, std::string& current_line, int& line_counter, int& current_line_character_count, int& selected_line_char);
-void OnUserEntersBackspace(sf::Event event, Storage& storage, Utility& utility, bool& last_char, std::string& current_line, int& current_line_character_count, int& line_counter, int& selected_line_char);
+void OnUserEntersBackspace(sf::Event event, Storage& storage, Utility& utility, bool& last_char, std::string& current_line, int& current_line_character_count, int& line_counter, int& selected_line_char, bool& user_has_typed_save);
 void OnLastCharacterInCurrentLine(Storage& storage, std::string& current_line, int& current_line_character_count, int& line_counter, bool& last_char, int& selected_line_char);
-void OnLeftArrowPressed(sf::Event event);
-void OnRightArrowPressed(sf::Event event);
-void OnRegularTextEntered(sf::Event event, std::string& current_line, int& current_line_character_count, int& selected_line_char);        
+void OnLeftArrowPressed(sf::Event event, int& current_line_character_count, int& selected_line_char);
+void OnRightArrowPressed(sf::Event event, int& current_line_character_count, int& selected_line_char); 
+void OnRegularTextEntered(sf::Event event, std::string& current_line, int& current_line_character_count, int& selected_line_char, bool& user_has_typed_save);
+
 
 int EditWindow::EditorControl(TextDocument& document, Storage& storage) 
 {
@@ -30,6 +31,7 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
     std::string current_line = "";
 	bool last_char;
 	bool user_typing = false;
+    bool user_has_typed_save = true;
 
 	int current_line_character_count = storage.GetLastLineFromLineStorage().size(); // Setting the char count
 	int selected_line_char = storage.GetLastLineFromLineStorage().size(); // Setting the selected char to be the last char of the text
@@ -38,11 +40,25 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
 	sf::Font font;
 	sf::Text text;
 	sf::Text lineCountText;
+    sf::Text file_not_saved;
+    sf::Text file_saved;
+
 
 	// Loading fonts
 	utility.CheckFontLoaded(font, "../8bitfont.ttf");
 	// Setting the text to be inwards -> TODO: Make it scalable with screen
 	text.setOrigin(sf::Vector2f(-80.f, 0.f));
+    file_not_saved.setOrigin(sf::Vector2f(-80.f, -930.f));
+    file_saved.setOrigin(sf::Vector2f(-80.f, -930.f));
+
+    file_not_saved.setFont(font);
+    file_saved.setFont(font);
+
+    file_not_saved.setString("Last saved - [NO]");
+    file_saved.setString("Last saved - [YES]");
+
+    file_not_saved.setFillColor(sf::Color::Black);
+    file_saved.setFillColor(sf::Color::Black);
 
 	// Line counter text, lines shown on left of screen
 	lineCountText.setFont(font);
@@ -54,11 +70,17 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
 	sf::Color textSeperatorColor(173, 239, 209);
 
 	sf::RectangleShape rect(sf::Vector2f(70.f, 1000.f));
+    sf::RectangleShape rect_bottom(sf::Vector2f(1500.f, 70.f));
 	rect.setPosition(sf::Vector2f(0.f, 0.f));
 	rect.setFillColor(textSeperatorColor);
+
+    rect_bottom.setPosition(sf::Vector2f(0.f, 930.f));
+    rect_bottom.setFillColor(textSeperatorColor);
+
 	sf::RenderTexture bgTex;
 	bgTex.create(1500, 1000);
 	bgTex.draw(rect);
+    bgTex.draw(rect_bottom);
 	bgTex.display();
 
 	sf::Sprite background_overlay(bgTex.getTexture());
@@ -70,6 +92,13 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
         window.draw(background_overlay);
         LineCountDraw(line_counter, lineCountText, window);
         display.DrawLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
+
+        if (!user_has_typed_save) {
+            window.draw(file_not_saved);
+        }
+        else if(user_has_typed_save) {
+            window.draw(file_saved);
+        }
 
         // DISPLAYING
         window.display();
@@ -88,25 +117,26 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
             case sf::Event::TextEntered:
                 user_typing = true;
                 if (event.text.unicode < 128) { 
+                    //Normal characters entered
+                    OnRegularTextEntered(event, current_line, current_line_character_count, selected_line_char, user_has_typed_save);
+                    //BACKSPACE
+                    OnUserEntersBackspace(event, storage, utility, last_char, current_line, current_line_character_count, line_counter, selected_line_char, user_has_typed_save);
+
                     // saving with ctrl+s
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
                         writer.WriteOutStorageContentOnFile(storage, document.GetDocumentPath(), current_line);
+                        user_has_typed_save = true;
                     }
-
-                    //Normal characters entered
-                    OnRegularTextEntered(event, current_line, current_line_character_count, selected_line_char);
-                    //BACKSPACE
-                    OnUserEntersBackspace(event, storage, utility, last_char, current_line, current_line_character_count, line_counter, selected_line_char);
-                    // Left and right arrow keys
-                    OnLeftArrowPressed(event);
-                    OnRightArrowPressed(event);
-
-
                 }
                 break;
 
             case sf::Event::KeyReleased:
                 OnEnterReleased(event, storage, current_line, line_counter, current_line_character_count, selected_line_char);
+                //OnLeftArrowPressed(event, current_line_character_count, selected_line_char);
+                //OnRightArrowPressed(event, current_line_character_count, selected_line_char);
+                break;
+
+            case sf::Event::KeyPressed:
                 break;
 
             }
@@ -145,7 +175,7 @@ void OnEnterReleased(sf::Event event, Storage& storage, std::string& current_lin
     }
 }
 
-void OnUserEntersBackspace(sf::Event event, Storage& storage, Utility& utility, bool& last_char, std::string& current_line, int& current_line_character_count, int& line_counter, int& selected_line_char) {
+void OnUserEntersBackspace(sf::Event event, Storage& storage, Utility& utility, bool& last_char, std::string& current_line, int& current_line_character_count, int& line_counter, int& selected_line_char, bool& user_has_typed_save) {
     if (event.text.unicode == '\b') // User enters backspace
     {
         // If the character pointer is where the user is, we delete the last character from the current line
@@ -171,6 +201,8 @@ void OnUserEntersBackspace(sf::Event event, Storage& storage, Utility& utility, 
             selected_line_char -= 1;
         }
         OnLastCharacterInCurrentLine(storage, current_line, current_line_character_count, line_counter, last_char, selected_line_char);
+
+        user_has_typed_save = false;
     }
 }
 
@@ -194,21 +226,28 @@ void OnLastCharacterInCurrentLine(Storage& storage, std::string& current_line, i
 }
 
 // When user presses LEFT & RIGHT arrow keys
-void OnLeftArrowPressed(sf::Event event) {
-    if (event.text.unicode == 37) {
-
+void OnLeftArrowPressed(sf::Event event, int& current_line_character_count, int& selected_line_char) {
+    std::cout << "left";
+    if (event.key.code == sf::Keyboard::Left) {
+        if (!selected_line_char - 1 <= 1) {
+            selected_line_char -= 1;
+        }
     }
 }
-void OnRightArrowPressed(sf::Event event) {
-    if (event.text.unicode == 38) {
-
+void OnRightArrowPressed(sf::Event event, int& current_line_character_count, int& selected_line_char) {
+    if (event.key.code == sf::Keyboard::Right) {
+        std::cout << "Right";
+        if (!selected_line_char + 1 >= current_line_character_count) {
+            //std::cout << "Right";
+            selected_line_char += 1;
+        }
     }
 }
 
 // When regular/ a-z text is entered | TODO: Abstracting ctrl+c, shift, etc.
-void OnRegularTextEntered(sf::Event event, std::string& current_line, int& current_line_character_count, int& selected_line_char) {
+void OnRegularTextEntered(sf::Event event, std::string& current_line, int& current_line_character_count, int& selected_line_char, bool& user_has_typed_save) {
     // If the unicode is not backspace, enter, left or right arrow
-    if (event.text.unicode != '\b' && event.text.unicode != 13 && event.text.unicode != '37' && event.text.unicode != '39')
+    if (event.text.unicode != '\b' && event.text.unicode != 13 && event.text.unicode != '37' && event.text.unicode != '39' && !sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
     {
         // if the current selected character is not the size of the line (so the current character is not the last character of the string)
         if (selected_line_char != current_line_character_count) {
@@ -221,6 +260,7 @@ void OnRegularTextEntered(sf::Event event, std::string& current_line, int& curre
         current_line += event.text.unicode;
         current_line_character_count += 1; // Keeping track of how many characters are in the string
         selected_line_char += 1;
+
+        user_has_typed_save = false;
     }
 }
-

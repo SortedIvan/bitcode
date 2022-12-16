@@ -19,16 +19,15 @@ int main()
     FileReader reader;
     EditWindow editor_window;
 
-    handler.CreateAllDocumentsOnLaunch(); // Find all documents at specified path and create object instances
-    
+    handler.CreateAllDocumentsOnLaunch();// Find all documents at specified path and create object instances
     // Make user choose document and save it as reference
     TextDocument documentChoice = handler.GetTextDocuments()->at(menu.MenuControl(handler));
-
+     
     // Fill out the storage with the according document
     reader.FillStorageFromFile(documentChoice.GetDocumentPath(), storage);
 
     // Start window
-    editor_window.EditorControl(documentChoice, storage); 
+    editor_window.EditorControl(documentChoice, storage);
 
     return EXIT_SUCCESS;
 }

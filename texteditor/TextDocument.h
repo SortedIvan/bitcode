@@ -10,4 +10,5 @@ class TextDocument {
 		TextDocument(std::string documentname, std::string documentpath);
 		std::string GetDocumentName();
 		std::string GetDocumentPath();
+		TextDocument() = default;
 };

@@ -11,6 +11,7 @@ void FileWriter::WriteOutStorageContentOnFile(Storage& storage, std::string file
     {
         text_file << storage.GetDisplayPool()->at(i);
     }
-    text_file << current_line + '\n';
+    text_file << current_line;
     text_file.close();
 }
+

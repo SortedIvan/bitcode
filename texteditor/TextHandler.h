@@ -7,6 +7,7 @@ class TextHandler {
 	private:
 		std::vector<TextDocument>* text_documents = new std::vector<TextDocument>();
 	public:
+		bool file_previously_made = false;
 		std::vector<TextDocument>* GetTextDocuments();
 		TextDocument FindTextDocumentByName(std::string name);
 		bool DeleteTextDocumentByName(std::string name);
