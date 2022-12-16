@@ -264,3 +264,7 @@ void OnRegularTextEntered(sf::Event event, std::string& current_line, int& curre
         user_has_typed_save = false;
     }
 }
+
+//void CharacterPositionAnimation(sf::Text& text) {
+//    sf::Text::findCharacterPos()
+//}
