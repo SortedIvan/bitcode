@@ -7,6 +7,7 @@ class Menu {
 
 	public:
 		int MenuControl(TextHandler& handler);
+		bool MenuCreationControl(TextHandler& handler);
 		bool CreateNewTextDocument(std::string name, TextHandler& handler);
 		bool SelectDocument(std::string name, TextHandler& handler);
 		bool DeleteDocument(std::string name);
