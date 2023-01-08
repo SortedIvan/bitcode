@@ -15,6 +15,8 @@ void OnLastCharacterInCurrentLine(Storage& storage, std::string& current_line, i
 void OnLeftArrowPressed(sf::Event event, int& current_line_character_count, int& selected_line_char);
 void OnRightArrowPressed(sf::Event event, int& current_line_character_count, int& selected_line_char); 
 void OnRegularTextEntered(sf::Event event, std::string& current_line, int& current_line_character_count, int& selected_line_char, bool& user_has_typed_save);
+void MoveScreen(sf::Event event, sf::RenderWindow& window, int move_amount);
+int QuitProgram(sf::RenderWindow& window, sf::Event event);
 
 
 int EditWindow::EditorControl(TextDocument& document, Storage& storage) 
@@ -23,9 +25,8 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
     Utility utility;
     FileWriter writer;
 
-	sf::RenderWindow window(sf::VideoMode(1500, 1000), document.GetDocumentName());
+	sf::RenderWindow window(sf::VideoMode(1500, 1000), document.GetDocumentName(), sf::Style::None);
 	sf::Event event;
-
 
 	//std::string current_line = storage.GetLastLineFromLineStorage(); // Current line is the last line
     std::string current_line = "";
@@ -93,6 +94,8 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
         LineCountDraw(line_counter, lineCountText, window);
         display.DrawLineOnScreen(current_line, window, sf::Color::White, font, text, storage.GetDisplayPool());
 
+
+        // Checking if the user has typed and displaying text to save
         if (!user_has_typed_save) {
             window.draw(file_not_saved);
         }
@@ -115,14 +118,17 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
                 break;
 
             case sf::Event::TextEntered:
+
                 user_typing = true;
                 if (event.text.unicode < 128) { 
+
                     //Normal characters entered
                     OnRegularTextEntered(event, current_line, current_line_character_count, selected_line_char, user_has_typed_save);
-                    //BACKSPACE
+
+                    // User enters backspace and deletes text
                     OnUserEntersBackspace(event, storage, utility, last_char, current_line, current_line_character_count, line_counter, selected_line_char, user_has_typed_save);
 
-                    // saving with ctrl+s
+                    // User saves the file with ctrl + s
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) && sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
                         writer.WriteOutStorageContentOnFile(storage, document.GetDocumentPath(), current_line);
                         user_has_typed_save = true;
@@ -137,17 +143,19 @@ int EditWindow::EditorControl(TextDocument& document, Storage& storage)
                 break;
 
             case sf::Event::KeyPressed:
+                MoveScreen(event, window, 10);
+                QuitProgram(window, event);
                 break;
 
             }
-
         }
     }
 
     return 1;
 }
 
-
+// Displays the line number on the side of the text
+// Change: Each row to have a line number and to be rendered together
 void LineCountDraw(int count, sf::Text& line_count_text, sf::RenderWindow& window) {
     std::string lines = "";
     for (int i = 0; i < count; i++) {
@@ -226,20 +234,78 @@ void OnLastCharacterInCurrentLine(Storage& storage, std::string& current_line, i
 }
 
 // When user presses LEFT & RIGHT arrow keys
-void OnLeftArrowPressed(sf::Event event, int& current_line_character_count, int& selected_line_char) {
+void OnLeftArrowPressed(sf::Event event, int& current_line_character_count, int& selected_line_char) 
+{
     std::cout << "left";
-    if (event.key.code == sf::Keyboard::Left) {
-        if (!selected_line_char - 1 <= 1) {
+    if (event.key.code == sf::Keyboard::Left) 
+    {
+        if (!selected_line_char - 1 <= 1) 
+        {
             selected_line_char -= 1;
         }
     }
 }
-void OnRightArrowPressed(sf::Event event, int& current_line_character_count, int& selected_line_char) {
-    if (event.key.code == sf::Keyboard::Right) {
+void OnRightArrowPressed(sf::Event event, int& current_line_character_count, int& selected_line_char) 
+{
+    if (event.key.code == sf::Keyboard::Right) 
+    {
         std::cout << "Right";
-        if (!selected_line_char + 1 >= current_line_character_count) {
+        if (!selected_line_char + 1 >= current_line_character_count) 
+        {
             //std::cout << "Right";
             selected_line_char += 1;
+        }
+    }
+}
+
+// Once the user presses ALT + Q, the program quits
+int QuitProgram(sf::RenderWindow& window, sf::Event event) 
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LAlt))
+    {
+        if (event.key.code == sf::Keyboard::Key::Q) {
+            window.close();
+            return 1;
+        }
+    }
+}
+
+// Moving the screen with ALT + arrow keys
+void MoveScreen(sf::Event event, sf::RenderWindow& window, int move_amount) 
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt)) 
+    {
+        sf::Vector2i last_position(window.getPosition().x, window.getPosition().y);
+        switch (event.key.code) 
+        {
+            case sf::Keyboard::Left: 
+            {
+                sf::Vector2 new_pos_left(last_position.x - move_amount, last_position.y);
+                window.setPosition(new_pos_left);
+            }
+            break;
+
+            case sf::Keyboard::Right: 
+            {
+                sf::Vector2 new_pos_right(last_position.x + move_amount, last_position.y);
+                window.setPosition(new_pos_right);
+            }
+            break;
+
+            case sf::Keyboard::Up: 
+            {
+                sf::Vector2 new_pos_up(last_position.x, last_position.y - move_amount);
+                window.setPosition(new_pos_up);
+            }
+            break;
+
+            case sf::Keyboard::Down: 
+            {
+                sf::Vector2 new_pos_down(last_position.x, last_position.y + move_amount);
+                window.setPosition(new_pos_down);
+            }
+            break;
+               
         }
     }
 }
